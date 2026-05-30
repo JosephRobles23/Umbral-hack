@@ -1,0 +1,26 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-002-change-source",
+  "title": "S2 es la única fuente de verdad de cambios detectados",
+  "version": 1, "status": "accepted", "cognitiveLevel": "anchor", "complexityTier": 3,
+  "whatAndHow": {
+    "decision": "Solo S2 detecta cambios y emite DocRegenEvent. S6, S8 y la re-verificación de contratos (S5) solo reaccionan a ese evento.",
+    "mechanism": "S2 calcula el conjunto mínimo de DocNode afectados por un diff y publica un DocRegenEvent. Los suscriptores re-proyectan/re-indexan/re-verifican solo el scope del evento."
+  },
+  "why": {
+    "rationale": "Si cada subsistema detectara cambios por su cuenta, sus proyecciones divergirían. Una única fuente garantiza consistencia entre C4, índice vectorial y contratos.",
+    "alternativesConsidered": [
+      { "option": "Cada subsistema detecta por su cuenta", "rejectedBecause": "Genera drift entre proyecciones." },
+      { "option": "Bus de eventos asíncrono", "rejectedBecause": "Un evento perdido es fallo silencioso (anti S13); innecesario en proceso local." }
+    ],
+    "references": ["R1", "R11"]
+  },
+  "whatNotToDo": { "antiPatterns": [
+    "Ningún subsistema observa filesystem/código directamente; solo S2.",
+    "No emitir DocRegenEvent con scope total: scope mínimo afectado."
+  ]},
+  "whatsNext": { "continuations": ["EDE-006-vertical-slices"], "openQuestions": [] },
+  "contracts": { "layerContracts": ["L1->L2"], "verifiedBy": ["orchestrator/doc-regen.test.ts"] },
+  "tests": { "unitTests": ["un cambio produce scope mínimo","suscriptores reciben el mismo evento"], "sadPaths": ["scope desproporcionado al diff se marca sospechoso"], "coverageTarget": 0.85 },
+  "provenance": { "phase": "design", "slice": 4, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

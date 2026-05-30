@@ -1,0 +1,26 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-000-persistence",
+  "title": "SQLite único (FTS5 + sqlite-vec) como sustrato local-first",
+  "version": 1, "status": "accepted", "cognitiveLevel": "anchor", "complexityTier": 3,
+  "whatAndHow": {
+    "decision": "S7 (text-search) y S8 (embeddings) viven en un único archivo SQLite usando FTS5 y la extensión sqlite-vec.",
+    "mechanism": "Una conexión better-sqlite3 abre ~/.umbral/umbral.db. FTS5 indexa searchableText de SessionNode; sqlite-vec almacena los vectores de DocChunk. Un cambio puede actualizar ambos índices en la misma transacción."
+  },
+  "why": {
+    "rationale": "Local-first exige cero servicios externos. Un único archivo permite atomicidad entre el índice textual y el vectorial, lo que sostiene el principio de fuente única de cambios (EDE-002).",
+    "alternativesConsidered": [
+      { "option": "Postgres + pgvector", "rejectedBecause": "Requiere levantar un servicio; rompe 'primero corre localmente'." },
+      { "option": "SQLite/FTS5 + LanceDB separado", "rejectedBecause": "Dos stores = dos transacciones = ventana de drift entre texto y vectores." }
+    ],
+    "references": ["R1", "R11"]
+  },
+  "whatNotToDo": { "antiPatterns": [
+    "No abrir múltiples conexiones de escritura concurrentes (SQLite serializa escrituras).",
+    "No indexar en FTS5 y sqlite-vec en transacciones separadas para el mismo cambio."
+  ]},
+  "whatsNext": { "continuations": ["EDE-002-change-source"], "openQuestions": ["Umbral de chunks para migrar a vector store dedicado"] },
+  "contracts": { "layerContracts": ["L1->L2"], "verifiedBy": ["persistence/db.test.ts"] },
+  "tests": { "unitTests": ["abre DB y crea esquema","inserta y recupera por FTS5","recupera por similitud vectorial"], "sadPaths": ["DB corrupta falla al boot (S13)","extensión sqlite-vec ausente falla al boot"], "coverageTarget": 0.85 },
+  "provenance": { "phase": "design", "slice": 0, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

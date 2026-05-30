@@ -1,0 +1,26 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-001-pac-dsl",
+  "title": "DSL propio en JSON declarativo para Policy-as-Code (S4)",
+  "version": 1, "status": "accepted", "cognitiveLevel": "anchor", "complexityTier": 3,
+  "whatAndHow": {
+    "decision": "Las políticas de S4 se expresan en un DSL declarativo en JSON, interpretado por un motor propio sin dependencia externa.",
+    "mechanism": "Cada Policy tiene una regla { subject, condition, effect }. El intérprete evalúa la condición contra el EvalContext en runtime y devuelve allow/deny/require_approval con rationale."
+  },
+  "why": {
+    "rationale": "Local-first y fail-fast favorecen cero dependencias externas y validación temprana. Un DSL JSON se valida con schema al cargar (fail-fast S13), es versionable en git y no requiere un runtime como OPA.",
+    "alternativesConsidered": [
+      { "option": "OPA/Rego", "rejectedBecause": "Motor externo; añade binario/servicio y rompe cero-dependencias local-first." },
+      { "option": "CEL", "rejectedBecause": "Tooling TS inmaduro; el DSL propio basta para el alcance." }
+    ],
+    "references": ["R12"]
+  },
+  "whatNotToDo": { "antiPatterns": [
+    "No permitir lógica imperativa arbitraria en reglas (solo condiciones declarativas).",
+    "No evaluar políticas en build: S4 es runtime por contrato."
+  ]},
+  "whatsNext": { "continuations": [], "openQuestions": ["Conjunto inicial de operadores de condición"] },
+  "contracts": { "layerContracts": ["L2->L3"], "verifiedBy": ["specialists/policy-engine/engine.test.ts"] },
+  "tests": { "unitTests": ["evalúa allow","evalúa deny","evalúa require_approval","deriva política desde whatNotToDo de una EDE"], "sadPaths": ["regla con schema inválido rechazada al cargar (S13)"], "coverageTarget": 0.9 },
+  "provenance": { "phase": "design", "slice": 7, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-004-evidence-adapter",
+  "title": "Capa de adaptadores: S9/S10 normalizan a ComprehensionSignal; F4 no los conoce",
+  "version": 1, "status": "accepted", "cognitiveLevel": "anchor", "complexityTier": 3,
+  "whatAndHow": {
+    "decision": "S9 (Langfuse) y S10 (DevTools) son adaptadores que normalizan su salida cruda a un único ComprehensionSignal. F4 (Comprehension Gate) solo lee ComprehensionSignal[].",
+    "mechanism": "Cada adaptador implementa EvidenceAdapter.produce(): ComprehensionSignal. F4 itera sobre los adaptadores registrados sin conocer su origen. Síncrono (no bus de eventos)."
+  },
+  "why": {
+    "rationale": "El contrato L2->L3 ya exige que toda salida de especialista cumpla un schema versionado antes de propagar. Encaja exacto: F4 nunca conoce 'Langfuse' ni 'DevTools', solo el schema. Añadir un tercer evaluador mañana no toca F4. Síncrono respeta fail-fast: un evento perdido en un bus sería fallo silencioso.",
+    "alternativesConsidered": [
+      { "option": "F4 conoce S9 y S10 directamente", "rejectedBecause": "Acopla F4 a cada fuente; añadir una nueva exige modificar F4." },
+      { "option": "Bus de eventos", "rejectedBecause": "Asíncrono y con fallos silenciosos; innecesario en local-first." }
+    ],
+    "references": ["R2", "R3"]
+  },
+  "whatNotToDo": { "antiPatterns": [
+    "F4 no debe importar ni referenciar a S9/S10 por nombre.",
+    "Un adaptador no debe exponer detalles de su fuente en ComprehensionSignal."
+  ]},
+  "whatsNext": { "continuations": [], "openQuestions": [] },
+  "contracts": { "layerContracts": ["L2->L3"], "verifiedBy": ["orchestrator/phases/verify.test.ts"] },
+  "tests": { "unitTests": ["F4 agrega señales de N adaptadores","un adaptador mock produce ComprehensionSignal válido"], "sadPaths": ["adaptador que devuelve señal inválida es rechazado antes de F4"], "coverageTarget": 0.85 },
+  "provenance": { "phase": "design", "slice": 6, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-003-ede-format",
+  "title": "EDEs como archivos .ede.json separados, referenciadas desde .md",
+  "version": 1, "status": "accepted", "cognitiveLevel": "navigator", "complexityTier": 2,
+  "whatAndHow": {
+    "decision": "Cada EDE es un .ede.json validable por schema. La prosa (.md) referencia EDEs por id, no las embebe.",
+    "mechanism": "Los .ede.json se validan contra ede-v2.json al cargar. S4, S5 y S11 los leen como datos. El .md enlaza por id."
+  },
+  "why": {
+    "rationale": "Separar datos de prosa permite que el agente consuma EDEs sin parsear markdown frágil y que el humano lea narrativa limpia. El schema da fail-fast ante EDEs malformadas.",
+    "alternativesConsidered": [
+      { "option": "Frontmatter en .md", "rejectedBecause": "Mezcla datos y prosa; frágil para estructuras anidadas." },
+      { "option": "JSON embebido en bloques .md", "rejectedBecause": "Difícil de validar y versionar atómicamente." }
+    ],
+    "references": ["R1"]
+  },
+  "whatNotToDo": { "antiPatterns": ["No duplicar contenido de la EDE en el .md (fuente única: el .ede.json)."] },
+  "whatsNext": { "continuations": [], "openQuestions": [] },
+  "contracts": { "layerContracts": [], "verifiedBy": ["persistence/ede-store.test.ts"] },
+  "tests": { "unitTests": ["carga y valida un .ede.json","indexa una EDE en la DB"], "sadPaths": [".ede.json inválido rechazado al cargar (S13)"], "coverageTarget": 0.85 },
+  "provenance": { "phase": "design", "slice": 1, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-006-vertical-slices",
+  "title": "Construcción por slices verticales end-to-end",
+  "version": 1, "status": "accepted", "cognitiveLevel": "navigator", "complexityTier": 2,
+  "whatAndHow": {
+    "decision": "El desarrollo avanza por slices verticales que tocan L1->L5, no por capas horizontales completas.",
+    "mechanism": "El Slice 1 implementa el mínimo de cada capa para un flujo end-to-end (EDE viva). Cada slice posterior añade un subsistema dejando la app corriendo y verificable."
+  },
+  "why": {
+    "rationale": "Un slice vertical valida los contratos entre capas desde el primer día y minimiza reescritura: si una frontera está mal definida, se descubre en el Slice 1 y no tras construir toda L1 a ciegas.",
+    "alternativesConsidered": [
+      { "option": "Por capa (L1 completo, luego L2...)", "rejectedBecause": "Los contratos entre capas no se prueban hasta tarde; alto riesgo de reescritura." },
+      { "option": "Por subsistema aislado", "rejectedBecause": "Cada subsistema queda sin integrar end-to-end hasta el final." }
+    ],
+    "references": ["R14"]
+  },
+  "whatNotToDo": { "antiPatterns": ["No empezar un slice nuevo si el anterior dejó la app en estado roto."] },
+  "whatsNext": { "continuations": ["EDE-007-self-governance"], "openQuestions": [] },
+  "contracts": { "layerContracts": [], "verifiedBy": [] },
+  "tests": { "unitTests": [], "sadPaths": [], "coverageTarget": 0 },
+  "provenance": { "phase": "design", "slice": 0, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

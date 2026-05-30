@@ -1,0 +1,52 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-XXX-slug",
+  "title": "Título legible de la decisión",
+  "version": 1,
+  "status": "proposed",
+  "cognitiveLevel": "navigator",
+  "complexityTier": 2,
+
+  "whatAndHow": {
+    "decision": "Qué se decidió, en una frase.",
+    "mechanism": "Cómo funciona, a alto nivel."
+  },
+
+  "why": {
+    "rationale": "Por qué esta decisión y no otra (ADR integrado — captura el razonamiento, no solo la conclusión).",
+    "alternativesConsidered": [
+      { "option": "Alternativa A", "rejectedBecause": "razón" }
+    ],
+    "references": ["R1", "R11"]
+  },
+
+  "whatNotToDo": {
+    "antiPatterns": [
+      "Anti-patrón conocido que el agente NO debe repetir (alimenta S4 PaC)."
+    ]
+  },
+
+  "whatsNext": {
+    "continuations": ["EDE-YYY-slug"],
+    "openQuestions": []
+  },
+
+  "contracts": {
+    "layerContracts": [],
+    "verifiedBy": []
+  },
+
+  "tests": {
+    "unitTests": [],
+    "sadPaths": [],
+    "coverageTarget": 0.8
+  },
+
+  "provenance": {
+    "phase": "design",
+    "slice": null,
+    "createdBy": "human",
+    "createdAt": null,
+    "lastUpdated": null
+  }
+}

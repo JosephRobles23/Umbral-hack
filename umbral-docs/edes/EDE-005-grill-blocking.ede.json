@@ -1,0 +1,26 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-005-grill-blocking",
+  "title": "Grill Me bloquea F2+ con override explícito que registra deuda",
+  "version": 1, "status": "accepted", "cognitiveLevel": "anchor", "complexityTier": 3,
+  "whatAndHow": {
+    "decision": "Sin alignmentScore mínimo, F2+ queda bloqueada. Existe un override explícito que desbloquea pero registra la diferencia como deuda cognitiva medible.",
+    "mechanism": "GrillSession.status debe ser 'aligned' para abrir F2. Un override marca status 'overridden' y crea un registro de deuda con el gap (umbral - score alcanzado), visible en el medidor CDR del frontend."
+  },
+  "why": {
+    "rationale": "Reconcilia dos principios de v2: Grill Me debe forzar engagement (bloquea de verdad), pero la verificación 'no es punitiva' (R7: bloqueos duros producen frustración, no aprendizaje). El override consciente es análogo a tomar deuda financiera a sabiendas: mejor saber que debes.",
+    "alternativesConsidered": [
+      { "option": "Bloqueo duro sin override", "rejectedBecause": "Punitivo; contradice el principio no-punitivo de F4." },
+      { "option": "Solo advierte, nunca bloquea", "rejectedBecause": "Pierde la fuerza de engagement; el humano ignora la advertencia." }
+    ],
+    "references": ["R3", "R7"]
+  },
+  "whatNotToDo": { "antiPatterns": [
+    "El override no debe ser silencioso: siempre crea un registro de deuda visible.",
+    "No permitir override sin un alignmentScore mínimo de seguridad (un piso por debajo del cual ni el override aplica)."
+  ]},
+  "whatsNext": { "continuations": [], "openQuestions": ["Definir el piso mínimo absoluto por debajo del cual el override no aplica"] },
+  "contracts": { "layerContracts": ["L3->L4"], "verifiedBy": ["orchestrator/grill.test.ts"] },
+  "tests": { "unitTests": ["score>=umbral abre F2","score<umbral bloquea F2","override registra deuda y desbloquea"], "sadPaths": ["override por debajo del piso mínimo es rechazado"], "coverageTarget": 0.9 },
+  "provenance": { "phase": "design", "slice": 2, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://umbral.dev/schemas/ede-v2.json",
+  "id": "EDE-007-self-governance",
+  "title": "Bootstrap manual hasta S12/S5; luego Umbral se autoaplica (dogfooding)",
+  "version": 1, "status": "accepted", "cognitiveLevel": "anchor", "complexityTier": 3,
+  "whatAndHow": {
+    "decision": "Los slices 0-4 se construyen manualmente (Umbral aún no puede gobernarse). Desde el Slice 5 (que instala S5 contratos + S12 gatekeepers), cada slice nuevo debe pasar por los propios gatekeepers de Umbral.",
+    "mechanism": "El Slice 5 conecta los gatekeepers a las tareas de turbo (gate:plan, gate:commit). A partir de ahí, abrir un slice exige una EDE aprobada (CodeGuard) con tests unitarios (PlanGuard) y commits que pasen el pipeline graduado (CommitGuard)."
+  },
+  "why": {
+    "rationale": "v2 sostiene que 'el sistema debe construirse comprendiéndose a sí mismo'. Pero no puede autoaplicarse antes de que existan los mecanismos de auto-aplicación. El bootstrap manual es el huevo antes de la gallina, registrado conscientemente como deuda temporal que el Slice 5 salda.",
+    "alternativesConsidered": [
+      { "option": "Dogfooding total desde Slice 0", "rejectedBecause": "Imposible: los gatekeepers no existen aún." },
+      { "option": "Nunca autoaplicarse", "rejectedBecause": "Traiciona la tesis central de v2." }
+    ],
+    "references": ["R4", "R5", "R16"]
+  },
+  "whatNotToDo": { "antiPatterns": ["No saltarse el Slice 5: sin él, el dogfooding nunca llega y el bootstrap manual se vuelve permanente."] },
+  "whatsNext": { "continuations": [], "openQuestions": [] },
+  "contracts": { "layerContracts": ["L3->L4"], "verifiedBy": ["orchestrator/gates/gatekeeper.test.ts"] },
+  "tests": { "unitTests": ["CodeGuard bloquea sin plan aprobado","PlanGuard exige unitTests","CommitGuard ejecuta pipeline graduado"], "sadPaths": ["transición sin gate aprobado es rechazada"], "coverageTarget": 0.9 },
+  "provenance": { "phase": "design", "slice": 5, "createdBy": "human", "createdAt": null, "lastUpdated": null }
+}

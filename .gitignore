@@ -1,0 +1,9 @@
+node_modules/
+.next/
+dist/
+coverage/
+.umbral/
+*.tsbuildinfo
+.turbo/
+.codegraph/
+hermes-war-room/
