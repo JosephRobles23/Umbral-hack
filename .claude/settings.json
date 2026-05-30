@@ -1,0 +1,39 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx @umbral/cli hook session-start",
+            "timeout": 10,
+            "statusMessage": "Cargando contexto de gobernanza Umbral..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx @umbral/cli hook pre-tool-use",
+            "timeout": 10,
+            "statusMessage": "Verificando gates Umbral..."
+          }
+        ]
+      }
+    ]
+  },
+  "mcpServers": {
+    "umbral": {
+      "command": "npx",
+      "args": [
+        "@umbral/cli",
+        "mcp"
+      ]
+    }
+  }
+}

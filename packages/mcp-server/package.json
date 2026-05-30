@@ -1,0 +1,28 @@
+{
+  "name": "@umbral/mcp-server",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "test": "vitest run",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1",
+    "@umbral/contracts": "workspace:*",
+    "@umbral/persistence": "workspace:*",
+    "@umbral/orchestrator": "workspace:*",
+    "@umbral/specialists": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7",
+    "better-sqlite3": "^11",
+    "sqlite-vec": "^0.1",
+    "tsx": "^4.22.3",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}

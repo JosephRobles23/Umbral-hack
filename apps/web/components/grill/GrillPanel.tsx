@@ -1,20 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { Send, AlertTriangle } from "lucide-react";
 import type { GrillSession } from "@umbral/contracts";
+import { Button, Badge, Progress, Input } from "@/components/ui";
 
-const statusColors: Record<string, string> = {
-  in_progress: "#3b82f6",
-  aligned: "#22c55e",
-  overridden: "#f59e0b",
-  blocked: "#ef4444",
+const STATUS_MAP: Record<string, { variant: "success" | "warning" | "error" | "info"; label: string }> = {
+  in_progress: { variant: "info", label: "EN PROGRESO" },
+  aligned: { variant: "success", label: "ALINEADO" },
+  overridden: { variant: "warning", label: "ANULADO" },
+  blocked: { variant: "error", label: "BLOQUEADO" },
 };
 
-const statusLabels: Record<string, string> = {
-  in_progress: "EN PROGRESO",
-  aligned: "ALINEADO",
-  overridden: "OVERRIDE",
-  blocked: "BLOQUEADO",
+const LEVEL_COLORS: Record<string, string> = {
+  explorer: "text-level-explorer",
+  navigator: "text-level-navigator",
+  anchor: "text-level-anchor",
 };
 
 export function GrillPanel({ initial }: { initial: GrillSession }) {
@@ -44,156 +45,147 @@ export function GrillPanel({ initial }: { initial: GrillSession }) {
     const data = await res.json();
     if (res.ok) {
       setSession(data.session);
-    } else {
-      alert(data.error);
     }
   };
 
-  const color = statusColors[session.status] ?? "#6b7280";
+  const status = STATUS_MAP[session.status] ?? STATUS_MAP.in_progress;
   const done = session.status === "aligned" || session.status === "overridden";
+  const pct = Math.min(100, (session.alignmentScore / session.threshold) * 100);
 
   return (
-    <div style={{ maxWidth: 700 }}>
-      {/* Score bar */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-          <span style={{ fontSize: 13, color: "#a3a3a3" }}>Alignment Score</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color }}>
+    <div className="max-w-[700px] animate-page-in">
+      {/* Score section */}
+      <div className="mb-8 max-w-[520px]">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs font-medium text-text-secondary tracking-wide">
+            Puntuación de alineación
+          </span>
+          <span className="font-mono text-sm font-semibold text-text-primary">
             {session.alignmentScore}/{session.threshold}
           </span>
         </div>
-        <div style={{ height: 8, borderRadius: 4, backgroundColor: "#262626" }}>
-          <div
-            style={{
-              height: "100%",
-              borderRadius: 4,
-              backgroundColor: color,
-              width: `${Math.min(100, (session.alignmentScore / session.threshold) * 100)}%`,
-              transition: "width 0.3s",
-            }}
-          />
-        </div>
-        <div style={{ marginTop: 6, fontSize: 12, color }}>
-          {statusLabels[session.status]}
+        <Progress value={session.alignmentScore} max={session.threshold} />
+        <div className="mt-2.5">
+          <Badge variant={status.variant} upper>
+            {status.label}
+          </Badge>
         </div>
       </div>
 
-      {/* Rounds */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {session.rounds.map((round) => (
-          <div
-            key={round.question.id}
-            style={{
-              border: "1px solid #333",
-              borderRadius: 8,
-              padding: 16,
-              backgroundColor: round.score !== null ? "#111" : "#0a0a0a",
-            }}
-          >
-            <div style={{ fontSize: 11, color: "#737373", marginBottom: 4 }}>
-              {round.question.cognitiveLevel.toUpperCase()} — {round.question.topic}
-            </div>
-            <p style={{ fontSize: 15, marginBottom: 12, lineHeight: 1.5 }}>
-              {round.question.text}
-            </p>
+      {/* Question cards */}
+      <div className="flex flex-col gap-4">
+        {session.rounds.map((round, i) => {
+          const levelColor = LEVEL_COLORS[round.question.cognitiveLevel] ?? "text-text-tertiary";
+          const answered = round.score !== null;
 
-            {round.score !== null ? (
-              <div>
-                <p style={{ fontSize: 13, color: "#a3a3a3", marginBottom: 4 }}>
-                  Tu respuesta: {round.answer}
-                </p>
-                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      padding: "2px 8px",
-                      borderRadius: 4,
-                      backgroundColor: round.score >= 70 ? "#166534" : round.score >= 50 ? "#78350f" : "#7f1d1d",
-                      color: "#fff",
-                    }}
-                  >
-                    {round.score}/100
-                  </span>
-                  <span style={{ fontSize: 12, color: "#a3a3a3" }}>{round.feedback}</span>
+          return (
+            <div
+              key={round.question.id}
+              className={`rounded-lg p-6 shadow-sm border transition-colors duration-300 animate-fade-up ${
+                answered
+                  ? "bg-bg-sidebar border-bg-elevated"
+                  : "bg-bg-card border-bg-elevated"
+              }`}
+              style={{ animationDelay: `${i * 50}ms` }}
+            >
+              {/* Level overline */}
+              <div className={`text-[11px] uppercase tracking-[0.06em] font-semibold mb-1 ${levelColor}`}>
+                {round.question.cognitiveLevel} — {round.question.topic}
+              </div>
+
+              {/* Question text */}
+              <p className="text-[15px] leading-relaxed text-text-primary mb-4">
+                &ldquo;{round.question.text}&rdquo;
+              </p>
+
+              {answered ? (
+                <div>
+                  <div className="text-xs font-medium text-text-tertiary mb-1">
+                    Tu respuesta
+                  </div>
+                  <p className="text-[13px] text-text-secondary mb-3">
+                    {round.answer}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant={
+                        round.score! >= 70
+                          ? "success"
+                          : round.score! >= 50
+                            ? "warning"
+                            : "error"
+                      }
+                      className="font-mono font-semibold"
+                    >
+                      {round.score}/100
+                    </Badge>
+                    <span className="text-[13px] text-text-secondary italic">
+                      {round.feedback}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  type="text"
-                  placeholder="Tu respuesta..."
-                  value={answers[round.question.id] ?? ""}
-                  onChange={(e) =>
-                    setAnswers({ ...answers, [round.question.id]: e.target.value })
-                  }
-                  disabled={done}
-                  style={{
-                    flex: 1,
-                    padding: "8px 12px",
-                    borderRadius: 6,
-                    border: "1px solid #333",
-                    backgroundColor: "#111",
-                    color: "#e5e5e5",
-                    fontSize: 14,
-                  }}
-                />
-                <button
-                  onClick={() => handleAnswer(round.question.id)}
-                  disabled={done || submitting === round.question.id}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 6,
-                    border: "none",
-                    backgroundColor: "#3b82f6",
-                    color: "#fff",
-                    cursor: done ? "not-allowed" : "pointer",
-                    fontSize: 13,
-                  }}
-                >
-                  {submitting === round.question.id ? "..." : "Enviar"}
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+              ) : (
+                <div className="flex gap-3">
+                  <Input
+                    placeholder="Tu respuesta…"
+                    value={answers[round.question.id] ?? ""}
+                    onChange={(e) =>
+                      setAnswers({ ...answers, [round.question.id]: e.target.value })
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleAnswer(round.question.id);
+                    }}
+                    disabled={done}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={() => handleAnswer(round.question.id)}
+                    disabled={done || submitting === round.question.id}
+                    loading={submitting === round.question.id}
+                    icon={submitting !== round.question.id ? <Send size={15} /> : undefined}
+                  >
+                    Enviar
+                  </Button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      {/* Override button */}
+      {/* Override section */}
       {!done && session.alignmentScore > 0 && (
-        <div style={{ marginTop: 24, padding: 16, border: "1px solid #78350f", borderRadius: 8 }}>
-          <p style={{ fontSize: 13, color: "#f59e0b", marginBottom: 8 }}>
-            ¿No puedes alinear? Puedes hacer override, pero se registrará como deuda cognitiva.
-          </p>
-          <button
-            onClick={handleOverride}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "1px solid #f59e0b",
-              backgroundColor: "transparent",
-              color: "#f59e0b",
-              cursor: "pointer",
-              fontSize: 13,
-            }}
-          >
-            Override (registrar deuda)
-          </button>
+        <div className="mt-6 rounded-lg border border-warning bg-warning-subtle p-5">
+          <div className="flex gap-2.5 mb-3.5">
+            <span className="text-warning inline-flex shrink-0 mt-0.5">
+              <AlertTriangle size={18} />
+            </span>
+            <span className="text-[13px] text-text-secondary">
+              ¿No logras alinear? Puedes anular, pero quedará registrado como{" "}
+              <strong className="text-text-primary">deuda cognitiva</strong>.
+            </span>
+          </div>
+          <Button variant="warning" onClick={handleOverride}>
+            Anular (registrar deuda)
+          </Button>
         </div>
       )}
 
       {/* Debt notice */}
       {session.status === "overridden" && (
-        <div style={{ marginTop: 16, padding: 12, backgroundColor: "#1c1917", borderRadius: 8, border: "1px solid #78350f" }}>
-          <p style={{ fontSize: 13, color: "#f59e0b" }}>
-            Deuda cognitiva registrada: gap de {session.threshold - session.alignmentScore} puntos.
-          </p>
+        <div className="mt-4 rounded-lg border border-warning bg-warning-subtle p-4">
+          <span className="text-[13px] text-warning">
+            Deuda cognitiva registrada: brecha de{" "}
+            {session.threshold - session.alignmentScore} puntos. Esta decisión
+            continúa bajo observación.
+          </span>
         </div>
       )}
 
-      {/* Gaps */}
+      {/* Unresolved gaps */}
       {session.unresolvedGaps.length > 0 && !done && (
-        <div style={{ marginTop: 16 }}>
-          <p style={{ fontSize: 12, color: "#ef4444" }}>
+        <div className="mt-4">
+          <p className="text-xs text-error">
             Gaps sin resolver: {session.unresolvedGaps.join(", ")}
           </p>
         </div>

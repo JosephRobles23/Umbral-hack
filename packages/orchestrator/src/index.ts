@@ -32,3 +32,5 @@ export { assembleClaudeContext } from "./claude-context";
 
 export { comprehensionGate, computeCdr, validateSignal } from "./phases/verify";
 export type { ComprehensionResult } from "./phases/verify";
+
+export { dispatchHook } from "./hook-dispatch";

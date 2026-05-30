@@ -74,3 +74,19 @@ export type {
   TerminalConfig,
   TerminalResize,
 } from "./terminal";
+
+export type {
+  ClaudeHookInput,
+  PreToolUseOutput,
+  SessionStartOutput,
+  HookOutput,
+  HookDispatchInput,
+  HookDispatchResult,
+} from "./hook-event";
+
+export type {
+  GraftNote,
+  GraftLink,
+  GraftGraph,
+  GraftFolder,
+} from "./graft";

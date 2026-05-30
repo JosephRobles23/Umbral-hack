@@ -1,0 +1,39 @@
+{
+  "name": "@umbral/cli",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "umbral": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsup",
+    "build:tsc": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1",
+    "commander": "^12",
+    "better-sqlite3": "^11",
+    "sqlite-vec": "^0.1",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "@umbral/contracts": "workspace:*",
+    "@umbral/persistence": "workspace:*",
+    "@umbral/orchestrator": "workspace:*",
+    "@umbral/mcp-server": "workspace:*",
+    "@umbral/specialists": "workspace:*",
+    "@types/better-sqlite3": "^7",
+    "@types/node": "^22",
+    "tsup": "^8",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}

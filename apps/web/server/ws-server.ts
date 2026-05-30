@@ -68,16 +68,23 @@ wss.on("connection", (ws: WebSocket) => {
           cwd: process.cwd(),
         };
 
-        const session = createSession(msg.sessionId, config);
-        session.clients.add(ws);
+        try {
+          const session = createSession(msg.sessionId, config);
+          session.clients.add(ws);
 
-        ws.send(
-          JSON.stringify({
-            type: "session-created",
-            sessionId: msg.sessionId,
-            pid: session.pid,
-          }),
-        );
+          ws.send(
+            JSON.stringify({
+              type: "session-created",
+              sessionId: msg.sessionId,
+              pid: session.pid,
+            }),
+          );
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Failed to create session";
+          console.error(`[umbral-ws] Failed to create session: ${message}`);
+          ws.send(JSON.stringify({ type: "error", message }));
+          ws.send(JSON.stringify({ type: "session-ended", sessionId: msg.sessionId, exitCode: 1 }));
+        }
         break;
       }
 

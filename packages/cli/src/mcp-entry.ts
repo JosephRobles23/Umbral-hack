@@ -1,0 +1,1 @@
+import "@umbral/mcp-server";

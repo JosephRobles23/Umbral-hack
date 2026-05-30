@@ -7,3 +7,4 @@ coverage/
 .turbo/
 .codegraph/
 hermes-war-room/
+apps/web/.claude/

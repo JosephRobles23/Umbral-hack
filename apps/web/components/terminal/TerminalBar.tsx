@@ -8,73 +8,40 @@ interface TerminalBarProps {
 
 export function TerminalBar({ sessionId, status, onKill }: TerminalBarProps) {
   const statusColor =
-    status === "connected" ? "#66c45a" : status === "connecting" ? "#f3bc4f" : "#ec5b56";
+    status === "connected"
+      ? "bg-[#66C45A]"
+      : status === "connecting"
+        ? "bg-[#F3BC4F]"
+        : "bg-[#EC5B56]";
+
+  const statusTextColor =
+    status === "connected"
+      ? "text-[#66C45A]"
+      : status === "connecting"
+        ? "text-[#F3BC4F]"
+        : "text-[#EC5B56]";
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "8px 14px",
-        background: "linear-gradient(180deg, #1a1812 0%, #14110b 100%)",
-        borderBottom: "1px solid rgba(243, 169, 59, 0.18)",
-        fontFamily: "'IBM Plex Mono', monospace",
-        fontSize: 11,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ display: "flex", gap: 6 }}>
+    <div className="h-9 bg-term-surface border-b border-term-border px-3.5 flex items-center justify-between font-mono text-[11px] text-term-text">
+      <div className="flex items-center gap-2">
+        {/* Traffic lights */}
+        <div className="flex gap-2">
           <span
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              backgroundColor: "#ec5b56",
-              border: "1px solid rgba(0,0,0,0.4)",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
+            className="w-3 h-3 rounded-full bg-[#EC5B56] border border-black/30 cursor-pointer hover:brightness-110"
             onClick={onKill}
             title="Kill session"
           />
-          <span
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              backgroundColor: "#f3bc4f",
-              border: "1px solid rgba(0,0,0,0.4)",
-              display: "inline-block",
-            }}
-          />
-          <span
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              backgroundColor: "#66c45a",
-              border: "1px solid rgba(0,0,0,0.4)",
-              display: "inline-block",
-            }}
-          />
+          <span className="w-3 h-3 rounded-full bg-[#F3BC4F] border border-black/30" />
+          <span className="w-3 h-3 rounded-full bg-[#66C45A] border border-black/30" />
         </div>
-        <span style={{ color: "#e6dfc8", opacity: 0.7 }}>
+        <span className="opacity-60">
           session: {sessionId.slice(0, 8)}
         </span>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <span
-          style={{
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            backgroundColor: statusColor,
-            display: "inline-block",
-          }}
-        />
-        <span style={{ color: statusColor, fontSize: 10 }}>{status}</span>
+      <div className="flex items-center gap-1.5">
+        <span className={`w-1.5 h-1.5 rounded-full ${statusColor}`} />
+        <span className={`text-[10px] ${statusTextColor}`}>{status}</span>
       </div>
     </div>
   );

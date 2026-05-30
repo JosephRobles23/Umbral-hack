@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@umbral/persistence", "@umbral/contracts", "@umbral/orchestrator"],
-  serverExternalPackages: ["better-sqlite3", "sqlite-vec", "node-pty"],
+  output: "standalone",
+  transpilePackages: [
+    "@umbral/persistence",
+    "@umbral/contracts",
+    "@umbral/orchestrator",
+    "@umbral/graph",
+  ],
+  serverExternalPackages: ["better-sqlite3", "sqlite-vec", "node-pty", "neo4j-driver"],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [
@@ -10,6 +16,7 @@ const nextConfig: NextConfig = {
         "better-sqlite3",
         "sqlite-vec",
         "node-pty",
+        "neo4j-driver",
       ];
     }
     return config;

@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design Tokens — Light / Dark via CSS Variables
+   ============================================================ */
+
+:root {
+  --bg-base: #F5F0E8;
+  --bg-surface: #EDE8DD;
+  --bg-elevated: #E6E0D4;
+  --bg-muted: #D9D2C5;
+  --bg-inverse: #1A1915;
+  --bg-overlay: #2C2B26;
+  --bg-sidebar: #FAFAF5;
+  --bg-card: #FFFFFF;
+
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6560;
+  --text-tertiary: #9B9590;
+  --text-inverse: #F5F0E8;
+  --text-disabled: #C5BFB5;
+
+  --accent: #DA7756;
+  --accent-hover: #C4674A;
+  --accent-pressed: #B05A40;
+  --accent-subtle: #F5E6DE;
+  --accent-text: #B85C3A;
+}
+
+.dark {
+  --bg-base: #1A1915;
+  --bg-surface: #252420;
+  --bg-elevated: #3A3832;
+  --bg-muted: #4A4842;
+  --bg-inverse: #F5F0E8;
+  --bg-overlay: #0F0E0B;
+  --bg-sidebar: #1A1915;
+  --bg-card: #252420;
+
+  --text-primary: #E8E4DD;
+  --text-secondary: #9B9590;
+  --text-tertiary: #6B6560;
+  --text-inverse: #1A1A1A;
+  --text-disabled: #4A4842;
+
+  --accent: #DA7756;
+  --accent-hover: #E08A6A;
+  --accent-pressed: #C4674A;
+  --accent-subtle: #3A2A22;
+  --accent-text: #E8956E;
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-bg-base text-text-primary font-body antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background: rgba(218, 119, 86, 0.22);
+  }
+}
+
+/* ============================================================
+   Scrollbars
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-muted);
+  border-radius: 5px;
+  border: 2px solid var(--bg-base);
+}
+
+/* ============================================================
+   Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -2,12 +2,27 @@
 
 import { useEffect, useState } from "react";
 import type { C4Model, C4RegenTrigger, C4Layer } from "@umbral/contracts";
+import { StatusDot, Badge } from "@/components/ui";
 
 const LAYER_COLORS: Record<C4Layer, string> = {
-  system: "#6366f1",
-  container: "#0ea5e9",
-  component: "#10b981",
-  code: "#f59e0b",
+  system: "border-layer-system",
+  container: "border-layer-container",
+  component: "border-layer-component",
+  code: "border-layer-code",
+};
+
+const LAYER_TEXT: Record<C4Layer, string> = {
+  system: "text-layer-system",
+  container: "text-layer-container",
+  component: "text-layer-component",
+  code: "text-layer-code",
+};
+
+const LAYER_BG: Record<C4Layer, string> = {
+  system: "bg-[#E8EAFC] dark:bg-[#2a2950]",
+  container: "bg-[#E0F2FE] dark:bg-[#1a3040]",
+  component: "bg-[#E7F8F1] dark:bg-[#1a3530]",
+  code: "bg-[#F5E6DE] dark:bg-[#352a22]",
 };
 
 const LAYER_LABELS: Record<C4Layer, string> = {
@@ -48,125 +63,78 @@ export function C4Viewer() {
   })).filter((g) => g.elements.length > 0);
 
   return (
-    <div
-      style={{
-        border: "1px solid #262626",
-        borderRadius: 8,
-        padding: 20,
-        backgroundColor: "#0a0a0a",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
+    <div className="rounded-lg border border-bg-elevated overflow-hidden bg-bg-card shadow-sm">
+      {/* Header */}
+      <div className="flex justify-between items-center px-5 py-3.5 border-b border-bg-elevated">
+        <h2 className="font-display text-lg font-semibold text-text-primary">
           C4 Model — Auto-generado
         </h2>
-        <span
-          style={{
-            fontSize: 11,
-            color: connected ? "#22c55e" : "#ef4444",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: connected ? "#22c55e" : "#ef4444",
-              display: "inline-block",
-            }}
-          />
-          {connected ? "SSE conectado" : "Desconectado"}
-        </span>
+        <StatusDot
+          variant={connected ? "success" : "error"}
+          label={connected ? "SSE conectado" : "Desconectado"}
+          pulse={connected}
+        />
       </div>
 
-      {!model ? (
-        <p style={{ color: "#525252", fontSize: 14 }}>
-          Sin modelo C4. Envía POST /api/doc-regen para generar.
-        </p>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {groupedByLayer.map(({ layer, elements }) => {
-            const isAffected = lastAffected.includes(layer);
-            return (
-              <div
-                key={layer}
-                style={{
-                  border: `1px solid ${isAffected && flash ? LAYER_COLORS[layer] : "#262626"}`,
-                  borderRadius: 6,
-                  padding: 12,
-                  transition: "border-color 0.3s ease",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: LAYER_COLORS[layer],
-                    margin: 0,
-                    marginBottom: 8,
-                  }}
-                >
-                  {LAYER_LABELS[layer]}
-                </h3>
+      {/* Content */}
+      <div className="p-5">
+        {!model ? (
+          <p className="text-text-tertiary text-sm">
+            Sin modelo C4. Presiona &ldquo;Regenerar&rdquo; para generar el modelo.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {groupedByLayer.map(({ layer, elements }) => {
+              const isAffected = lastAffected.includes(layer);
+              return (
                 <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 8,
-                  }}
+                  key={layer}
+                  className={`rounded-md border p-3 transition-colors duration-300 ${
+                    isAffected && flash
+                      ? LAYER_COLORS[layer]
+                      : "border-bg-elevated"
+                  }`}
                 >
-                  {elements.map((el) => (
-                    <div
-                      key={el.id}
-                      style={{
-                        backgroundColor: "#171717",
-                        border: `1px solid ${LAYER_COLORS[layer]}33`,
-                        borderRadius: 4,
-                        padding: "8px 12px",
-                        fontSize: 12,
-                        minWidth: 140,
-                      }}
-                    >
-                      <div style={{ fontWeight: 600, marginBottom: 2 }}>
-                        {el.name}
-                      </div>
-                      <div style={{ color: "#737373", fontSize: 11 }}>
-                        {el.description}
-                      </div>
-                      {el.relationships.length > 0 && (
-                        <div
-                          style={{
-                            marginTop: 4,
-                            fontSize: 10,
-                            color: "#525252",
-                          }}
-                        >
-                          {el.relationships.map((r) => (
-                            <span key={r.targetId}>→ {r.targetId} </span>
-                          ))}
+                  <h3 className={`text-[13px] font-semibold mb-2 ${LAYER_TEXT[layer]}`}>
+                    {LAYER_LABELS[layer]}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {elements.map((el) => (
+                      <div
+                        key={el.id}
+                        className={`rounded-md border border-bg-elevated px-3 py-2 min-w-[140px] ${LAYER_BG[layer]}`}
+                      >
+                        <div className="font-semibold text-xs text-text-primary mb-0.5">
+                          {el.name}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        <div className="text-[11px] text-text-tertiary">
+                          {el.description}
+                        </div>
+                        {el.relationships.length > 0 && (
+                          <div className="mt-1 text-[10px] text-text-tertiary">
+                            {el.relationships.map((r) => (
+                              <Badge
+                                key={r.targetId}
+                                variant="neutral"
+                                className="mr-1 mt-1 text-[10px] py-0 px-1.5"
+                              >
+                                → {r.targetId}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-          <div style={{ fontSize: 11, color: "#525252" }}>
-            Última actualización: {model.lastUpdated}
+              );
+            })}
+            <div className="text-[11px] text-text-tertiary">
+              Última actualización: {model.lastUpdated}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
