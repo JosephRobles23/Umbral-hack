@@ -5,7 +5,8 @@ export type DetectionCategory =
   | "database"
   | "testing"
   | "build"
-  | "styling";
+  | "styling"
+  | "infra";
 
 export interface Detection {
   category: DetectionCategory;
@@ -14,6 +15,7 @@ export interface Detection {
   confidence: number;
   evidence: string[];
   metadata: Record<string, unknown>;
+  subdir?: string;
 }
 
 export interface Detector {
