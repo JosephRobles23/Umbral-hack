@@ -22,6 +22,7 @@ COPY packages/persistence/src packages/persistence/src
 COPY packages/orchestrator/src packages/orchestrator/src
 COPY packages/graph/src packages/graph/src
 COPY apps/web/ apps/web/
+RUN mkdir -p apps/web/public
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm --filter @umbral/contracts build && \
@@ -44,7 +45,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public 2>/dev/null || true
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 
 USER nextjs
 

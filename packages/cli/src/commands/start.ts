@@ -6,7 +6,7 @@ import { createServer } from "node:net";
 
 const UMBRAL_DIR = join(homedir(), ".umbral");
 const COMPOSE_PATH = join(UMBRAL_DIR, "docker-compose.yml");
-const DOCKER_IMAGE = process.env.UMBRAL_IMAGE ?? "umbral/web:latest";
+const DOCKER_IMAGE = process.env.UMBRAL_IMAGE ?? "ghcr.io/josephrobles23/umbral-web:latest";
 
 interface StartOptions {
   port?: string;
